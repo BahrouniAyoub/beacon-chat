@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pending_messages: {
+        Row: {
+          created_at: string
+          delivered_at: string | null
+          delivery_attempts: number | null
+          encrypted_content: string
+          expires_at: string
+          id: string
+          iv: string
+          recipient_public_key: string
+          sender_public_key: string
+          signature: string | null
+        }
+        Insert: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_attempts?: number | null
+          encrypted_content: string
+          expires_at?: string
+          id?: string
+          iv: string
+          recipient_public_key: string
+          sender_public_key: string
+          signature?: string | null
+        }
+        Update: {
+          created_at?: string
+          delivered_at?: string | null
+          delivery_attempts?: number | null
+          encrypted_content?: string
+          expires_at?: string
+          id?: string
+          iv?: string
+          recipient_public_key?: string
+          sender_public_key?: string
+          signature?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
