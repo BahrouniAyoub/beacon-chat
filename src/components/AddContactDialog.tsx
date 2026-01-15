@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { X, Copy, Check, QrCode, UserPlus } from 'lucide-react';
+import { X, Copy, Check, QrCode, UserPlus, ScanLine } from 'lucide-react';
 import { useMessaging } from '@/contexts/MessagingContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { QRCodeDisplay } from './QRCodeDisplay';
+import { QRCodeScanner } from './QRCodeScanner';
 
 interface AddContactDialogProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
   const [signingKey, setSigningKey] = useState('');
   const [copied, setCopied] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   if (!isOpen) return null;
 
@@ -87,13 +90,15 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
         <div className="p-6">
           {tab === 'share' ? (
             <div className="space-y-4">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-secondary flex items-center justify-center">
-                  <QrCode className="w-8 h-8 text-primary" />
-                </div>
+              <div className="text-center mb-4">
                 <p className="text-sm text-muted-foreground">
-                  Share these keys with someone to let them add you as a contact.
+                  Share your QR code or keys to let others add you.
                 </p>
+              </div>
+
+              {/* QR Code */}
+              <div className="flex justify-center">
+                <QRCodeDisplay size={180} />
               </div>
 
               <div className="space-y-3">
@@ -102,7 +107,7 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
                     Your ID
                   </label>
                   <div className="mt-1 px-3 py-2 bg-secondary rounded-lg">
-                    <p className="font-mono text-sm text-primary">{identity?.id}</p>
+                    <p className="font-mono text-sm text-primary truncate">{identity?.id}</p>
                   </div>
                 </div>
 
@@ -114,7 +119,7 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
                     <textarea
                       readOnly
                       value={shareData}
-                      className="w-full h-24 px-3 py-2 bg-secondary rounded-lg font-mono text-xs resize-none"
+                      className="w-full h-20 px-3 py-2 bg-secondary rounded-lg font-mono text-xs resize-none"
                     />
                   </div>
                 </div>
@@ -136,20 +141,26 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
                   </>
                 )}
               </Button>
-
-              <p className="text-xs text-muted-foreground text-center">
-                🔮 QR code sharing coming soon
-              </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-secondary flex items-center justify-center">
-                  <UserPlus className="w-8 h-8 text-primary" />
+              {/* Scan QR Button */}
+              <Button
+                onClick={() => setShowScanner(true)}
+                variant="outline"
+                className="w-full border-primary/50 hover:bg-primary/10"
+              >
+                <ScanLine className="w-4 h-4 mr-2" />
+                Scan QR Code
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Paste the public keys someone shared with you.
-                </p>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">or enter manually</span>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -207,6 +218,12 @@ export function AddContactDialog({ isOpen, onClose }: AddContactDialogProps) {
             </div>
           )}
         </div>
+
+        {/* QR Scanner Modal */}
+        <QRCodeScanner 
+          isOpen={showScanner} 
+          onClose={() => setShowScanner(false)} 
+        />
       </div>
     </div>
   );

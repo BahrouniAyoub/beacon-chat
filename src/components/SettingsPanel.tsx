@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Settings, Radio, Shield, Moon, ChevronRight, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Settings, Radio, Shield, Moon, ChevronRight, ToggleLeft, ToggleRight, Bluetooth, Wifi } from 'lucide-react';
 import { useMessaging } from '@/contexts/MessagingContext';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { P2PStatusPanel } from './P2PStatusPanel';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface SettingsPanelProps {
 
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { identity, isGatewayMode, toggleGatewayMode } = useMessaging();
+  const [showP2PPanel, setShowP2PPanel] = useState(false);
 
   if (!isOpen) return null;
 
@@ -55,7 +57,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             <SettingRow
               icon={Radio}
               title="Act as Gateway"
-              description="Relay messages for nearby offline users when you have internet"
+              description="Relay messages for nearby offline users"
               trailing={
                 <button 
                   onClick={toggleGatewayMode}
@@ -73,11 +75,29 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
               }
             />
 
+            <button
+              onClick={() => setShowP2PPanel(!showP2PPanel)}
+              className="w-full mt-3 flex items-center justify-between py-2 text-sm"
+            >
+              <div className="flex items-center gap-2">
+                <Bluetooth className="w-4 h-4 text-muted-foreground" />
+                <Wifi className="w-4 h-4 text-muted-foreground" />
+                <span>P2P Connection Status</span>
+              </div>
+              <ChevronRight className={cn(
+                "w-4 h-4 text-muted-foreground transition-transform",
+                showP2PPanel && "rotate-90"
+              )} />
+            </button>
+
+            {showP2PPanel && (
+              <P2PStatusPanel className="mt-3" />
+            )}
+
             <div className="mt-3 p-3 bg-status-gateway/10 rounded-lg border border-status-gateway/20">
               <p className="text-xs text-muted-foreground">
                 <span className="text-status-gateway font-medium">Gateway Mode</span> allows your 
-                device to help others send messages when they're offline. This uses your data 
-                connection but helps the mesh network function.
+                device to help others send messages when they're offline.
               </p>
             </div>
           </div>
@@ -122,9 +142,11 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 <StatusItem label="E2E Encryption" status="done" />
                 <StatusItem label="Offline Message Queue" status="done" />
                 <StatusItem label="Anonymous Identity" status="done" />
+                <StatusItem label="Cloud Message Relay" status="done" />
+                <StatusItem label="QR Code Sharing" status="done" />
                 <StatusItem label="P2P Discovery (Bluetooth)" status="future" />
                 <StatusItem label="Wi-Fi Direct Transfer" status="future" />
-                <StatusItem label="Gateway Relay" status="future" />
+                <StatusItem label="Background P2P Scan" status="future" />
               </div>
             </div>
           </div>
